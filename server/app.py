@@ -1,14 +1,18 @@
 from flask import Flask, jsonify
-from routes.api_routes import api  # Import the blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from config import Config
-from models import db  # Imports all models via models/__init__.py
-# Initialize extensions
+from server.config import Config
+from server.routes.api_routes import api
+from server.models import db  # Imports all models via models/__init__.py
 
+# Initialize extensions
 migrate = Migrate()
 
+
 def create_app():
+    """
+    Factory function to create and configure the Flask application.
+    """
     # Initialize Flask app
     app = Flask(__name__)
     app.config.from_object(Config)
@@ -17,7 +21,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Register the blueprint
+    # Register blueprints
     app.register_blueprint(api)
 
     # Health check route
@@ -28,7 +32,7 @@ def create_app():
     return app
 
 
-# Run the application
+# Entry point for running the application
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)
