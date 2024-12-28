@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 from server.config import Config
 from server.routes.api_routes import api
 from server.models import db  # Imports all models via models/__init__.py
@@ -16,6 +17,9 @@ def create_app():
     # Initialize Flask app
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # Enable CORS
+    CORS(app, resources={r"/api/*": {"origins": "http://127.0.0.1:5173"}})  # Replace with your frontend URL if different
 
     # Initialize extensions
     db.init_app(app)
