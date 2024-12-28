@@ -19,7 +19,7 @@ def create_app():
     app.config.from_object(Config)
 
     # Enable CORS
-    CORS(app, resources={r"/api/*": {"origins": "http://127.0.0.1:5173"}})  # Replace with your frontend URL if different
+    CORS(app, resources={r"/api/*": {"origins": "*"}}) # Replace with your frontend URL if different
 
     # Initialize extensions
     db.init_app(app)
