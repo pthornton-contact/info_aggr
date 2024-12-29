@@ -7,3 +7,4 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'supersecretkey')
     CELERY_BROKER_URL = "redis://localhost:6379/0"  # Broker
     CELERY_RESULT_BACKEND = "redis://localhost:6379/0"  # Result backend
+    ALPHA_VANTAGE_API_KEY= "34LG9EQ9YFN7BP9M"
