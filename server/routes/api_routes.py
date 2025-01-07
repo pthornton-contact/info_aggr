@@ -3,7 +3,8 @@ from server.models import db
 from server.models.user import User
 from server.models.feed_item import FeedItem
 from server.models.subscription import Subscription
-
+from server.models.research_paper import ResearchPaper
+from server.models.stock_data import StockData
 api = Blueprint('api', __name__)
 
 # Mock response for /api/health
@@ -12,10 +13,39 @@ def health_check():
     return jsonify({'status': 'ok'}), 200
 
 # User routes
-@api.route('/api/users', methods=['GET'])
-def get_users():
-    users = User.query.all()
-    return jsonify([user.to_dict() for user in users])
+@api.route('/api/feeds', methods=['GET'])
+def get_feeds():
+    stocks = StockData.query.all()
+    papers = ResearchPaper.query.all()
+
+    feed_items = []
+
+    # Convert stock_data rows to feed-friendly dicts
+    for stock in stocks:
+        feed_items.append({
+            'type': 'stock',
+            'id': stock.id,
+            'ticker': stock.ticker,         # rename from 'symbol' -> 'ticker'
+            'price': stock.close_price,     # rename from 'price' -> one of your float fields
+            'timestamp': stock.timestamp,   
+        })
+
+    # Convert research_papers rows to feed-friendly dicts
+    for paper in papers:
+        feed_items.append({
+            'type': 'research',
+            'id': paper.id,
+            'title': paper.title,
+            'abstract': paper.abstract,
+            'published_date': paper.published_date,
+        })
+
+    feed_items.sort(
+        key=lambda item: item.get('timestamp') or item.get('published_date'), 
+        reverse=True
+    )
+
+    return jsonify(feed_items)
 
 @api.route('/api/users', methods=['POST'])
 def create_user():
@@ -25,11 +55,7 @@ def create_user():
     db.session.commit()
     return jsonify(user.to_dict()), 201
 
-# FeedItem routes
-@api.route('/api/feeds', methods=['GET'])
-def get_feeds():
-    feeds = FeedItem.query.all()
-    return jsonify([feed.to_dict() for feed in feeds])
+
 
 @api.route('/api/feeds', methods=['POST'])
 def create_feed():

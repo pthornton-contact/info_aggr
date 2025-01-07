@@ -9,3 +9,4 @@ from .feed_item import FeedItem
 from .subscription import Subscription
 from .research_paper import ResearchPaper
 from .stock_data import StockData
+from .alert import Alert

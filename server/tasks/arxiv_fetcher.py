@@ -4,7 +4,7 @@ from datetime import datetime
 
 def fetch_arxiv_data(target_author):
     base_url = "https://export.arxiv.org/api/query?"
-    query = f"search_query=au:{quote(target_author)}&start=0&max_results=5"
+    query = f"search_query=au:{quote(target_author)}&start=0&max_results=200"
     url = base_url + query
 
     response = feedparser.parse(url)

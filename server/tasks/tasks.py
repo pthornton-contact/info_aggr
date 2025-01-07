@@ -3,6 +3,24 @@ from server.models import db, ResearchPaper, StockData
 from server.tasks.arxiv_fetcher import fetch_arxiv_data
 from server.tasks.stock_fetcher import fetch_stock_data
 
+# @celery.task
+# def fetch_stock_data_task(ticker):
+#     """Task to fetch and save stock data."""
+#     with app.app_context():
+#         # Fetch data from the stock API
+#         data = fetch_stock_data(ticker)
+
+#         # Check for existing entry in the database
+#         existing_entry = StockData.query.filter_by(ticker=data["ticker"], timestamp=data["timestamp"]).first()
+#         if not existing_entry:
+#             # Save new entry if it doesn't already exist
+#             stock_entry = StockData(**data)
+#             db.session.add(stock_entry)
+#             db.session.commit()
+#             return f"Fetched and saved data for {ticker}"
+#         else:
+#             return f"Duplicate data for {ticker} at {data['timestamp']} skipped."
+        
 @celery.task
 def fetch_stock_data_task(ticker):
     """Task to fetch and save stock data."""
@@ -10,16 +28,15 @@ def fetch_stock_data_task(ticker):
         # Fetch data from the stock API
         data = fetch_stock_data(ticker)
 
-        # Check for existing entry in the database
-        existing_entry = StockData.query.filter_by(ticker=data["ticker"], timestamp=data["timestamp"]).first()
-        if not existing_entry:
-            # Save new entry if it doesn't already exist
-            stock_entry = StockData(**data)
-            db.session.add(stock_entry)
-            db.session.commit()
-            return f"Fetched and saved data for {ticker}"
-        else:
-            return f"Duplicate data for {ticker} at {data['timestamp']} skipped."
+        # Optionally, log data for debugging
+        print(f"Fetched data: {data}")
+
+        # Save all data, skipping only exact duplicates
+        stock_entry = StockData(**data)
+        db.session.add(stock_entry)
+        db.session.commit()
+
+        return f"Fetched and saved data for {ticker}"
 
 @celery.task
 def fetch_arxiv_data_task(author):
