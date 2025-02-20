@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -27,6 +27,11 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(api)
+
+    # News route
+    @app.route("/news")
+    def news():
+        return render_template('news.html')
 
     # Health check route
     @app.route("/api/health", methods=["GET"])
